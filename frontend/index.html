@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusAI Registry</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <div class="ambient-light">
+    <div class="blob purple"></div>
+    <div class="blob cyan"></div>
+    <div class="blob pink"></div>
+  </div>
+  
+  <div class="noise-overlay"></div>
+
+  <div class="app-window glass-morphism">
+    
+    <aside class="sidebar">
+      <div class="logo-area">
+        <div class="logo-icon"><i class="fa-solid fa-layer-group"></i></div>
+        <h2>Nexus<span class="highlight">AI</span></h2>
+      </div>
+
+      <nav>
+        <ul>
+          <li onclick="showForm('addForm', this)" class="nav-item active">
+            <i class="fa-solid fa-plus-circle"></i> <span>Add Model</span>
+          </li>
+          <li onclick="showForm('viewForm', this)" class="nav-item">
+            <i class="fa-solid fa-search"></i> <span>Search</span>
+          </li>
+          <li onclick="showForm('updateForm', this)" class="nav-item">
+            <i class="fa-solid fa-sliders"></i> <span>Update</span>
+          </li>
+          <li onclick="showForm('deleteForm', this)" class="nav-item">
+            <i class="fa-solid fa-trash-can"></i> <span>Delete</span>
+          </li>
+          <li onclick="showForm('allForm', this)" class="nav-item">
+            <i class="fa-solid fa-database"></i> <span>Registry</span>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="run-btn-wrapper">
+        <button onclick="showForm('runForm', document.getElementById('run-nav-item'))" class="run-btn-sidebar">
+          <i class="fa-solid fa-bolt"></i> Run Inference
+        </button>
+        <div id="run-nav-item" style="display:none"></div> 
+      </div>
+    </aside>
+
+    <main class="content-area">
+      
+      <header class="top-bar">
+        <div class="breadcrumbs">Dashboard / <span id="current-section">Overview</span></div>
+        <div class="status-indicator">
+          <span class="status-dot"></span> System Online
+        </div>
+      </header>
+
+      <div class="forms-container">
+
+        <form id="addForm" class="active-panel" onsubmit="addModel(event)">
+          <div class="panel-header">
+            <h1>Deploy Model</h1>
+            <p>Register a new endpoint into the neural network.</p>
+          </div>
+          
+          <div class="input-box">
+            <label>Name (Display Name)</label>
+            <input type="text" id="name" placeholder="e.g. My Custom GPT" required>
+          </div>
+
+          <div class="input-box">
+            <label>Model Name (HuggingFace ID)</label>
+            <input type="text" id="model_id" placeholder="organization/model-name" required>
+          </div>
+
+          <div class="input-box">
+            <label>API Endpoint</label>
+            <input type="text" id="api_url" placeholder="https://api-inference.huggingface.co/..." required>
+          </div>
+
+          <div class="input-box">
+            <label>Access Token</label>
+            <input type="password" id="api_key" placeholder="hf_xxxxxxxxxxxx" required>
+          </div>
+
+          <button type="submit" class="action-btn">
+            <span>Initialize Model</span> <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </form>
+
+        <form id="viewForm" class="hidden-panel" onsubmit="viewModel(event)">
+          <div class="panel-header">
+            <h1>Search Matrix</h1>
+          </div>
+          <div class="search-bar-styled">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="view_name" placeholder="Type model name to search..." required>
+            <button type="submit">Find</button>
+          </div>
+          <div class="terminal-window">
+            <div class="terminal-bar">
+              <div class="traffic-lights">
+                <div class="light red"></div>
+                <div class="light yellow"></div>
+                <div class="light green"></div>
+              </div>
+              <span class="terminal-title">json_output.log</span>
+            </div>
+            <pre id="view_output">// Waiting for query...</pre>
+          </div>
+        </form>
+
+        <form id="updateForm" class="hidden-panel" onsubmit="updateModel(event)">
+          <div class="panel-header">
+            <h1>Reconfigure</h1>
+          </div>
+          <div class="input-box">
+            <label>Target Name (Current Display Name)</label>
+            <input type="text" id="update_name" required>
+          </div>
+          
+          <div class="divider"><span>New Parameters</span></div>
+
+          <div class="input-box">
+            <label>New Model Name (HF ID)</label>
+            <input type="text" id="update_model_id">
+          </div>
+
+          <div class="input-box">
+            <label>New API URL</label>
+            <input type="text" id="update_api_url">
+          </div>
+          
+          <div class="input-box">
+            <label>New API Key</label>
+            <input type="password" id="update_api_key">
+          </div>
+
+          <button type="submit" class="action-btn update">Update Configuration</button>
+        </form>
+
+        <form id="deleteForm" class="hidden-panel" onsubmit="deleteModel(event)">
+          <div class="panel-header">
+            <h1 class="danger-text">Destruction Protocol</h1>
+          </div>
+          <div class="glass-alert">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p>Deleting a model is permanent and cannot be undone.</p>
+          </div>
+          
+          <div class="input-box">
+            <label>Select Model to Delete</label>
+            <div class="custom-select-wrapper">
+              <select id="delete-model-select" required></select>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+          </div>
+
+          <button type="submit" class="action-btn danger">Execute Delete</button>
+        </form>
+
+        <form id="runForm" class="hidden-panel" onsubmit="runInference(event)">
+          <div class="panel-header">
+            <h1>Inference Engine</h1>
+            <p>Real-time interaction with deployed models.</p>
+          </div>
+
+          <div class="input-box">
+            <label>Select Engine</label>
+            <div class="custom-select-wrapper">
+              <select id="model-select"></select>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+          </div>
+
+          <div class="input-box">
+            <label>Prompt Injection</label>
+            <textarea id="prompt" placeholder="Enter your system prompt here..." required></textarea>
+          </div>
+
+          <button type="submit" class="action-btn glow">
+            <i class="fa-solid fa-play"></i> Run Generation
+          </button>
+
+          <div class="terminal-window large">
+            <div class="terminal-bar">
+              <span class="terminal-title">inference_stream.txt</span>
+            </div>
+            <pre id="output" class="typing-effect">System Ready. Awaiting Input...</pre>
+          </div>
+        </form>
+
+        <div id="allForm" class="hidden-panel">
+          <div class="panel-header">
+            <h1>Full Registry</h1>
+            <button onclick="loadAll()" class="refresh-icon"><i class="fa-solid fa-sync"></i></button>
+          </div>
+          <div class="terminal-window full-height">
+            <pre id="all_output"></pre>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
