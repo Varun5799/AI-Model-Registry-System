@@ -167,34 +167,58 @@
           <button type="submit" class="action-btn danger">Execute Delete</button>
         </form>
 
-        <form id="runForm" class="hidden-panel" onsubmit="runInference(event)">
+        <form id="runForm" class="hidden-panel" onsubmit="return false">
           <div class="panel-header">
             <h1>Inference Engine</h1>
             <p>Real-time interaction with deployed models.</p>
           </div>
 
-          <div class="input-box">
-            <label>Select Engine</label>
-            <div class="custom-select-wrapper">
-              <select id="model-select"></select>
-              <i class="fa-solid fa-chevron-down"></i>
+          <div class="grid-2 chat-compare">
+            <div class="chat-panel" id="left-panel">
+              <div class="panel-header"><h2>Chat A</h2></div>
+              <div class="input-box">
+                <label>Select Engine</label>
+                <div class="custom-select-wrapper">
+                  <select id="model-select-left"></select>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+              </div>
+              <div class="input-box">
+                <label>Prompt</label>
+                <textarea id="prompt-left" placeholder="Enter prompt for Chat A..." required></textarea>
+              </div>
+              <button class="action-btn glow" onclick="runInferenceInstance('left')"><i class="fa-solid fa-play"></i> Run</button>
+              <div class="terminal-window large">
+                <div class="terminal-bar"><span class="terminal-title">chat_a.txt</span></div>
+                <pre id="output-left" class="typing-effect">Chat A Ready. Awaiting Input...</pre>
+              </div>
+            </div>
+
+            <div class="chat-panel" id="right-panel">
+              <div class="panel-header"><h2>Chat B</h2></div>
+              <div class="input-box">
+                <label>Select Engine</label>
+                <div class="custom-select-wrapper">
+                  <select id="model-select-right"></select>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+              </div>
+              <div class="input-box">
+                <label>Prompt</label>
+                <textarea id="prompt-right" placeholder="Enter prompt for Chat B..." required></textarea>
+              </div>
+              <button class="action-btn glow" onclick="runInferenceInstance('right')"><i class="fa-solid fa-play"></i> Run</button>
+              <div class="terminal-window large">
+                <div class="terminal-bar"><span class="terminal-title">chat_b.txt</span></div>
+                <pre id="output-right" class="typing-effect">Chat B Ready. Awaiting Input...</pre>
+              </div>
             </div>
           </div>
 
-          <div class="input-box">
-            <label>Prompt Injection</label>
-            <textarea id="prompt" placeholder="Enter your system prompt here..." required></textarea>
-          </div>
-
-          <button type="submit" class="action-btn glow">
-            <i class="fa-solid fa-play"></i> Run Generation
-          </button>
-
-          <div class="terminal-window large">
-            <div class="terminal-bar">
-              <span class="terminal-title">inference_stream.txt</span>
-            </div>
-            <pre id="output" class="typing-effect">System Ready. Awaiting Input...</pre>
+          <div style="margin-top: 16px; display:flex; gap:12px; align-items:center;">
+            <button class="action-btn" onclick="runBoth()"><i class="fa-solid fa-play"></i> Run Both</button>
+            <button class="action-btn" onclick="clearBoth()"><i class="fa-solid fa-broom"></i> Clear Both</button>
+            <div style="margin-left:auto;color:var(--text-muted);font-size:0.85rem;">Compare chats side-by-side</div>
           </div>
         </form>
 

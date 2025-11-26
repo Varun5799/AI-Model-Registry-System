@@ -14,14 +14,17 @@ async function loadAll() {
       outputBox.textContent = JSON.stringify(models, null, 2);
     }
 
-    // 2. Update Inference Dropdown
-    const select = document.getElementById("model-select");
-    if (select) {
-      select.innerHTML = "";
-      models.forEach(m => {
-        select.innerHTML += `<option value="${m.id}">${m.name}</option>`;
-      });
-    }
+    // 2. Update Inference Dropdowns (left + right)
+    const selectLeft = document.getElementById("model-select-left");
+    const selectRight = document.getElementById("model-select-right");
+    [selectLeft, selectRight].forEach(select => {
+      if(select){
+        select.innerHTML = "";
+        models.forEach(m => {
+          select.innerHTML += `<option value="${m.id}">${m.name}</option>`;
+        });
+      }
+    });
 
     // 3. Update DELETE Dropdown (New Feature)
     const deleteSelect = document.getElementById("delete-model-select");
@@ -139,16 +142,19 @@ async function deleteModel(event) {
   }
 }
 
-// Run Inference
-async function runInference(event) {
-  event.preventDefault();
+// Run Inference Instance (for left or right panel)
+async function runInferenceInstance(side) {
+  const modelEl = document.getElementById(`model-select-${side}`);
+  const promptEl = document.getElementById(`prompt-${side}`);
+  const outputEl = document.getElementById(`output-${side}`);
 
-  const model_id = document.getElementById("model-select").value;
-  const prompt = document.getElementById("prompt").value;
-  const outputArea = document.getElementById("output");
+  if (!modelEl || !promptEl || !outputEl) return;
 
-  outputArea.textContent = "Initializing Neural Handshake...\nSending Packets...";
-  
+  const model_id = modelEl.value;
+  const prompt = promptEl.value;
+
+  outputEl.textContent = "Initializing Neural Handshake...\nSending Packets...";
+
   try {
     const res = await fetch(`${API}/infer`, {
       method: "POST",
@@ -157,11 +163,24 @@ async function runInference(event) {
     });
 
     const result = await res.json();
-    outputArea.textContent = result.output || "No output returned.";
-    
+    outputEl.textContent = result.output || "No output returned.";
   } catch (err) {
-    outputArea.textContent = "CRITICAL ERROR: Connection severed.\n" + err.message;
+    outputEl.textContent = "CRITICAL ERROR: Connection severed.\n" + err.message;
   }
+}
+
+// Run both panels concurrently
+function runBoth() {
+  runInferenceInstance('left');
+  runInferenceInstance('right');
+}
+
+// Clear both outputs
+function clearBoth(){
+  const left = document.getElementById('output-left');
+  const right = document.getElementById('output-right');
+  if(left) left.textContent = 'Chat A Ready. Awaiting Input...';
+  if(right) right.textContent = 'Chat B Ready. Awaiting Input...';
 }
 
 

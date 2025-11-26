@@ -257,6 +257,27 @@ input:focus, select:focus, textarea:focus {
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
+/* --- Chat Compare Panels --- */
+.chat-compare { align-items: start; }
+.chat-panel {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255,255,255,0.03);
+  padding: 18px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.chat-panel .panel-header h2 { font-size: 1.2rem; margin-bottom: 0; }
+.chat-panel .input-box { margin-bottom: 10px; }
+.chat-panel .action-btn.glow { padding: 8px 12px; width: auto; }
+.chat-panel .terminal-window.large { height: 260px; }
+
+@media (max-width: 900px) {
+  .app-window { width: calc(100% - 40px); }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
 /* --- Search Bar --- */
 .search-bar-styled {
   display: flex;
